@@ -6,7 +6,8 @@ FROM python:3.11-slim
 
 # Create required directories
 RUN mkdir -p /opt/modules && \
-    mkdir -p /tmp/bold-public-portal/cache
+    mkdir -p /tmp/bold-public-portal/cache && \
+    mkdir -p /opt/log/bold-public-portal
 
 # Create modules directory and add modules
 WORKDIR /opt/modules/barcode-core-data-model
