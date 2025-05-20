@@ -87,38 +87,39 @@ if couchbase-cli server-list -c 127.0.0.1 --username Administrator --password pa
     couchbase-cli collection-manage -c 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --create-collection _default.taxonomies
 
     log "$(date +"%T") Inserting data into buckets ........."
+    log "$(date +"%T") BCDM"
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket BCDM --scope-collection-exp _default.primary \
-        --format lines --dataset file:///db_data/BCDM.jsonl --generate-key '%record_id%'
+        --format lines --dataset file:///opt/db_data/BCDM.jsonl --generate-key '%record_id%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.accepted_terms \
-        --format lines --dataset file:///db_data/accepted_terms.jsonl --generate-key '%term%'
+        --format lines --dataset file:///opt/db_data/accepted_terms.jsonl --generate-key '%term%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.tax_geo_inst_summaries \
-        --format lines --dataset file:///db_data/tax_geo_inst_summaries.jsonl --generate-key '%`tax_geo_inst_id`%'
+        --format lines --dataset file:///opt/db_data/tax_geo_inst_summaries.jsonl --generate-key '%`tax_geo_inst_id`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.country_summaries \
-        --format lines --dataset file:///db_data/country_summaries.jsonl --generate-key '%`country/ocean`%'
+        --format lines --dataset file:///opt/db_data/country_summaries.jsonl --generate-key '%`country/ocean`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.institution_summaries \
-        --format lines --dataset file:///db_data/institution_summaries.jsonl --generate-key '%`inst`%'
+        --format lines --dataset file:///opt/db_data/institution_summaries.jsonl --generate-key '%`inst`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.sequence_run_site_summaries \
-        --format lines --dataset file:///db_data/sequence_run_site_summaries.jsonl --generate-key '%`sequence_run_site`%'
+        --format lines --dataset file:///opt/db_data/sequence_run_site_summaries.jsonl --generate-key '%`sequence_run_site`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.bin_summaries \
-        --format lines --dataset file:///db_data/bin_summaries.jsonl --generate-key '%`bin_uri`%'
+        --format lines --dataset file:///opt/db_data/bin_summaries.jsonl --generate-key '%`bin_uri`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.dataset_summaries \
-        --format lines --dataset file:///db_data/dataset_summaries.jsonl --generate-key '%`dataset.code`%'
+        --format lines --dataset file:///opt/db_data/dataset_summaries.jsonl --generate-key '%`dataset.code`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.primer_summaries \
-        --format lines --dataset file:///db_data/primer_summaries.jsonl --generate-key '%`name`%'
+        --format lines --dataset file:///opt/db_data/primer_summaries.jsonl --generate-key '%`name`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.taxonomy_summaries \
-        --format lines --dataset file:///db_data/taxonomy_summaries.jsonl --generate-key '%`taxid`%'
+        --format lines --dataset file:///opt/db_data/taxonomy_summaries.jsonl --generate-key '%`taxid`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.barcodeclusters \
-        --format lines --dataset file:///db_data/barcodeclusters.jsonl --generate-key '%`barcodecluster.uri`%'
+        --format lines --dataset file:///opt/db_data/barcodeclusters.jsonl --generate-key '%`barcodecluster.uri`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.datasets \
-        --format lines --dataset file:///db_data/datasets.jsonl --generate-key '%`dataset.code`%'
+        --format lines --dataset file:///opt/db_data/datasets.jsonl --generate-key '%`dataset.code`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.countries \
-        --format lines --dataset file:///db_data/geopols.jsonl --generate-key '%`name`%'
+        --format lines --dataset file:///opt/db_data/geopols.jsonl --generate-key '%`name`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.institutions \
-        --format lines --dataset file://db_data/institutions.jsonl --generate-key '%name%'
+        --format lines --dataset file://opt/db_data/institutions.jsonl --generate-key '%name%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.primers \
-        --format lines --dataset file:///db_data/primers.jsonl --generate-key '%`name`%'
+        --format lines --dataset file:///opt/db_data/primers.jsonl --generate-key '%`name`%'
     cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.taxonomies \
-        --format lines --dataset file:///db_data/taxonomies.jsonl --generate-key '%`taxid`%'
+        --format lines --dataset file:///opt/db_data/taxonomies.jsonl --generate-key '%`taxid`%'
 #    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.publications \
 #        --format lines --dataset file:///db_data/publications.jsonl --generate-key '%`publication.id`%'
 
@@ -135,7 +136,7 @@ if couchbase-cli server-list -c 127.0.0.1 --username Administrator --password pa
 
     # Create indexes
     echo "$(date +"%T") Create indexes ........."
-    cbq -u Administrator -p password -f /db_data/indexes.validation.n1ql
+    cbq -u Administrator -p password -f /opt/db_data/indexes.validation.n1ql
 fi
 
 # Restores the server to the foreground
