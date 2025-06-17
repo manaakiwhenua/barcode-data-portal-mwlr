@@ -57,7 +57,8 @@ def summarize(input):
             pid_map[record["processid"]] = len(pid_map)
 
         # rounding off geo coord
-        if "coord" in record and len(record["coord"]) == 2:
+        # added check for NoneType
+        if "coord" in record and record["coord"] is not None and len(record["coord"]) == 2:
             record["coord"] = (
                 round(record["coord"][0], 1),
                 round(record["coord"][1], 1),
@@ -69,6 +70,7 @@ def summarize(input):
 
         if (
             "collection_date_start" in record
+            and record["collection_date_start"] is not None #add check for NoneType
             and len(record["collection_date_start"]) > 5
         ):
             record["collection_date_start"] = record["collection_date_start"][:7]
@@ -250,6 +252,9 @@ def write_terms(terms, terms_file):
     with open(terms_file, "w") as f:
         for term, info in terms.items():
             info["term"] = term
+            # check for Nonetype to reduce errors
+            if term is None:
+                continue
             # lowercase
             info["standardized_term"] = (
                 term.strip().lower().translate(str_sanitize_mapping)
