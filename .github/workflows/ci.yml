@@ -1,0 +1,61 @@
+# CI/CD workflow for barcode-data-portal-mwlr
+#
+# Build Strategy:
+# - On push to main: builds and pushes images to Artifactory
+# - ArgoCD Image Updater automatically deploys to dev
+# - Prod promotion is manual via PR to k8s-apps-config
+#
+# This workflow has NO write access to the GitOps repository.
+
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    uses: manaakiwhenua/github-workflows/.github/workflows/docker-build.yml@main
+    with:
+      bake_file: docker-bake.hcl
+      bake_target: default
+      push: ${{ github.event_name != 'pull_request' }}
+    secrets:
+      ARTIFACTORY_HOST: ${{ secrets.ARTIFACTORY_HOST }}
+      ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+      ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
+
+  # Dev deployment is automatic via ArgoCD Image Updater
+  # This job just provides visibility into what was built
+  dev-info:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dev deployment info
+        run: |
+          cat << SUMMARY >> $GITHUB_STEP_SUMMARY
+          ## ✅ Build Complete
+          
+          | Property | Value |
+          |----------|-------|
+          | Build ID | \`${{ needs.build.outputs.build_id }}\` |
+          | Registry | \`${{ needs.build.outputs.registry_prefix }}\` |
+          | Metadata | [${{ needs.build.outputs.metadata_url }}](${{ needs.build.outputs.metadata_url }}) |
+          
+          ### Dev Deployment
+          
+          🔄 **ArgoCD Image Updater** will automatically detect the new images and update the dev environment.
+          
+          No manual action required for dev.
+          
+          ### Prod Promotion
+          
+          To promote to production:
+          1. Go to [k8s-apps-config](https://bitbucket.org/landcareresearch/k8s-apps-config)
+          2. Update the prod deployment manifests with build ID: \`${{ needs.build.outputs.build_id }}\`
+          3. Create a Pull Request for review
+          4. After merge, ArgoCD will sync to production
+          SUMMARY
