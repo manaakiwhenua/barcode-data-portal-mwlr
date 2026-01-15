@@ -22,9 +22,9 @@ jobs:
       bake_file: docker-bake.hcl
       bake_target: default
       push: ${{ github.event_name != 'pull_request' }}
+      registry_host: ${{ vars.ARTIFACTORY_HOST }}
+      registry_username: ${{ vars.ARTIFACTORY_USERNAME }}
     secrets:
-      ARTIFACTORY_HOST: ${{ secrets.ARTIFACTORY_HOST }}
-      ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
       ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
 
   # Dev deployment is automatic via ArgoCD Image Updater
