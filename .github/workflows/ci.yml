@@ -26,6 +26,7 @@ jobs:
       registry_username: ${{ vars.ARTIFACTORY_USERNAME }}
     secrets:
       ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
+      REGISTRY_CA_CERT: ${{ secrets.REGISTRY_CA_CERT }}
 
   deploy-dev:
     needs: build
