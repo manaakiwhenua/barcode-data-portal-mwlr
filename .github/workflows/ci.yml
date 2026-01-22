@@ -2,10 +2,10 @@
 #
 # Build Strategy:
 # - On push to main: builds and pushes images to Artifactory
-# - ArgoCD Image Updater automatically deploys to dev
-# - Prod promotion is manual via PR to k8s-apps-config
+# - Triggers k8s-apps-config pipeline to update manifests
+# - ArgoCD syncs the updated manifests to the cluster
 #
-# This workflow has NO write access to the GitOps repository.
+# This workflow triggers a Bitbucket pipeline to update the GitOps repository.
 
 name: CI/CD
 
@@ -27,29 +27,40 @@ jobs:
     secrets:
       ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
 
-  # Dev deployment is automatic via ArgoCD Image Updater
-  # This job just provides visibility into what was built
-  dev-info:
+  deploy-dev:
     needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: k8s-dev
     steps:
-      - name: Dev deployment info
+      - name: Checkout for action
+        uses: actions/checkout@v4
+        with:
+          repository: manaakiwhenua/github-workflows
+          sparse-checkout: actions/k8s-deploy
+          path: .github-workflows
+
+      - name: Deploy to dev
+        uses: ./.github-workflows/actions/k8s-deploy
+        with:
+          app_name: barcode-data-portal-mwlr
+          environment: dev
+          cluster: tak-k8s-nonprod
+          build_key: ${{ needs.build.outputs.build_id }}
+          bitbucket_token: ${{ secrets.K8S_APPS_CONFIG_TRIGGER_TOKEN }}
+
+      - name: Deployment Summary
         run: |
           cat << SUMMARY >> $GITHUB_STEP_SUMMARY
-          ## ✅ Build Complete
+          ## ✅ Deployment Triggered
           
           | Property | Value |
           |----------|-------|
           | Build ID | \`${{ needs.build.outputs.build_id }}\` |
-          | Registry | \`${{ needs.build.outputs.registry_prefix }}\` |
-          | Metadata | [${{ needs.build.outputs.metadata_url }}](${{ needs.build.outputs.metadata_url }}) |
+          | Environment | dev |
+          | Cluster | tak-k8s-nonprod |
           
-          ### Dev Deployment
-          
-          🔄 **ArgoCD Image Updater** will automatically detect the new images and update the dev environment.
-          
-          No manual action required for dev.
+          The k8s-apps-config pipeline has updated the manifests and ArgoCD will sync shortly.
           
           ### Prod Promotion
           
