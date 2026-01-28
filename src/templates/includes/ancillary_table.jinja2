@@ -112,7 +112,7 @@
             order: order,
             select: select,
             ajax: {
-                url: `/api/ancillary-set?collection=${collection}&fields=${fields}&min_records=${minRecords}`,
+                url: `/api/ancillary-set?collection=${encodeURIComponent(collection)}&fields=${encodeURIComponent(fields)}&min_records=${minRecords}`,
                 dataSrc: dataSrc,
             },
             columns: columns,
