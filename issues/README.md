@@ -2,6 +2,17 @@
 
 This folder tracks issues and bugs discovered during development.
 
+## Open Issues
+
+- [JS Chunk Loading Error](open/js-chunk-loading-error/README.md)
+
+## Resolved Issues
+
+- [DataTables Address Parameter Error](resolved/datatables-address-parameter-error/README.md)
+- [JSONL Trailing Lines](resolved/jsonl-trailing-lines/README.md)
+
+---
+
 ## Structure
 
 ```
