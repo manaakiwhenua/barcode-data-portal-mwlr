@@ -224,13 +224,17 @@
         {% if notice %}
         top: 100px;
         {% else %}
-        top: 200px;
+        top: 150px;
         {% endif %}
         z-index: 10;
     }
     #search-title h1 {
         color: white !important;
         font-size: 50px !important;
+    }
+    #search-title h2 {
+        color: white !important;
+        font-size: 32px !important;
     }
     #search-bar {
         position: absolute;
@@ -290,6 +294,9 @@
     <div id="search-title" class="container-fluid">
         <div class="row justify-content-center">
             <h1>Documenting Global Biodiversity Using DNA</h1>
+        </div>
+        <div class="row justify-content-center">
+            <h2>Prototype Implementation for the BSI.</h2>
         </div>
     </div>
     <div id="search-bar" class="container-fluid">
