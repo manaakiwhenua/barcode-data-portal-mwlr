@@ -49,6 +49,27 @@ until [[ $(check_db) = 0 ]]; do
   sleep 1
 done
 
+# Function to import JSONL data, stripping empty lines to prevent parse errors
+# Usage: import_jsonl <bucket> <collection> <file> <key_pattern>
+import_jsonl() {
+  local bucket="$1"
+  local collection="$2"
+  local file="$3"
+  local key_pattern="$4"
+  
+  log "Importing $file into $bucket.$collection..."
+  
+  # Create a temp file with empty lines removed
+  local tmpfile=$(mktemp)
+  grep -v '^\s*$' "$file" > "$tmpfile" || true
+  
+  cbimport json --cluster 127.0.0.1 -u Administrator -p password \
+    --bucket "$bucket" --scope-collection-exp "_default.$collection" \
+    --format lines --dataset "file://$tmpfile" --generate-key "$key_pattern"
+  
+  rm -f "$tmpfile"
+}
+
 # Check if the cluster is already initialized
 log "$(date +"%T") Reading cluster ........."
 if couchbase-cli server-list -c 127.0.0.1 --username Administrator --password password | grep -q ERROR; then
@@ -87,40 +108,23 @@ if couchbase-cli server-list -c 127.0.0.1 --username Administrator --password pa
     couchbase-cli collection-manage -c 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --create-collection _default.taxonomies
 
     log "$(date +"%T") Inserting data into buckets ........."
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket BCDM --scope-collection-exp _default.primary \
-        --format lines --dataset file:///db_data/BCDM.jsonl --generate-key '%record_id%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.accepted_terms \
-        --format lines --dataset file:///db_data/accepted_terms.jsonl --generate-key '%term%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.tax_geo_inst_summaries \
-        --format lines --dataset file:///db_data/tax_geo_inst_summaries.jsonl --generate-key '%`tax_geo_inst_id`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.country_summaries \
-        --format lines --dataset file:///db_data/country_summaries.jsonl --generate-key '%`country/ocean`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.institution_summaries \
-        --format lines --dataset file:///db_data/institution_summaries.jsonl --generate-key '%`inst`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.sequence_run_site_summaries \
-        --format lines --dataset file:///db_data/sequence_run_site_summaries.jsonl --generate-key '%`sequence_run_site`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.bin_summaries \
-        --format lines --dataset file:///db_data/bin_summaries.jsonl --generate-key '%`bin_uri`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.dataset_summaries \
-        --format lines --dataset file:///db_data/dataset_summaries.jsonl --generate-key '%`dataset.code`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.primer_summaries \
-        --format lines --dataset file:///db_data/primer_summaries.jsonl --generate-key '%`name`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket DERIVED --scope-collection-exp _default.taxonomy_summaries \
-        --format lines --dataset file:///db_data/taxonomy_summaries.jsonl --generate-key '%`taxid`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.barcodeclusters \
-        --format lines --dataset file:///db_data/barcodeclusters.jsonl --generate-key '%`barcodecluster.uri`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.datasets \
-        --format lines --dataset file:///db_data/datasets.jsonl --generate-key '%`dataset.code`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.countries \
-        --format lines --dataset file:///db_data/geopols.jsonl --generate-key '%`name`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.institutions \
-        --format lines --dataset file://db_data/institutions.jsonl --generate-key '%name%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.primers \
-        --format lines --dataset file:///db_data/primers.jsonl --generate-key '%`name`%'
-    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.taxonomies \
-        --format lines --dataset file:///db_data/taxonomies.jsonl --generate-key '%`taxid`%'
-#    cbimport json --cluster 127.0.0.1 -u Administrator -p password --bucket ANCILLARY --scope-collection-exp _default.publications \
-#        --format lines --dataset file:///db_data/publications.jsonl --generate-key '%`publication.id`%'
+    import_jsonl BCDM primary /db_data/BCDM.jsonl '%record_id%'
+    import_jsonl DERIVED accepted_terms /db_data/accepted_terms.jsonl '%term%'
+    import_jsonl DERIVED tax_geo_inst_summaries /db_data/tax_geo_inst_summaries.jsonl '%`tax_geo_inst_id`%'
+    import_jsonl DERIVED country_summaries /db_data/country_summaries.jsonl '%`country/ocean`%'
+    import_jsonl DERIVED institution_summaries /db_data/institution_summaries.jsonl '%`inst`%'
+    import_jsonl DERIVED sequence_run_site_summaries /db_data/sequence_run_site_summaries.jsonl '%`sequence_run_site`%'
+    import_jsonl DERIVED bin_summaries /db_data/bin_summaries.jsonl '%`bin_uri`%'
+    import_jsonl DERIVED dataset_summaries /db_data/dataset_summaries.jsonl '%`dataset.code`%'
+    import_jsonl DERIVED primer_summaries /db_data/primer_summaries.jsonl '%`name`%'
+    import_jsonl DERIVED taxonomy_summaries /db_data/taxonomy_summaries.jsonl '%`taxid`%'
+    import_jsonl ANCILLARY barcodeclusters /db_data/barcodeclusters.jsonl '%`barcodecluster.uri`%'
+    import_jsonl ANCILLARY datasets /db_data/datasets.jsonl '%`dataset.code`%'
+    import_jsonl ANCILLARY countries /db_data/geopols.jsonl '%`name`%'
+    import_jsonl ANCILLARY institutions /db_data/institutions.jsonl '%name%'
+    import_jsonl ANCILLARY primers /db_data/primers.jsonl '%`name`%'
+    import_jsonl ANCILLARY taxonomies /db_data/taxonomies.jsonl '%`taxid`%'
+#    import_jsonl ANCILLARY publications /db_data/publications.jsonl '%`publication.id`%'
 
 
 
