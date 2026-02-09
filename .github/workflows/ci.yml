@@ -1,19 +1,23 @@
-# CI/CD workflow for barcode-data-portal-mwlr
+# CI workflow for barcode-data-portal-mwlr
 #
 # Build Strategy:
 # - On push to main: builds and pushes images to Artifactory
-# - Triggers k8s-apps-config pipeline to update manifests
-# - ArgoCD syncs the updated manifests to the cluster
+# - Automatically deploys to dev environment
+# - Use promote.yml workflow manually to deploy to test/prod
 #
 # This workflow triggers a Bitbucket pipeline to update the GitOps repository.
 
-name: CI/CD
+name: CI
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true  # Cancel previous runs on new push
 
 jobs:
   build:
@@ -55,7 +59,7 @@ jobs:
       - name: Deployment Summary
         run: |
           cat << SUMMARY >> $GITHUB_STEP_SUMMARY
-          ## ✅ Deployment Triggered
+          ## ✅ Dev Deployment Triggered
           
           | Property | Value |
           |----------|-------|
@@ -65,11 +69,7 @@ jobs:
           
           The k8s-apps-config pipeline has updated the manifests and ArgoCD will sync shortly.
           
-          ### Prod Promotion
+          ### Promote to Higher Environments
           
-          To promote to production:
-          1. Go to [k8s-apps-config](https://bitbucket.org/landcareresearch/k8s-apps-config)
-          2. Update the prod deployment manifests with build ID: \`${{ needs.build.outputs.build_id }}\`
-          3. Create a Pull Request for review
-          4. After merge, ArgoCD will sync to production
+          To promote this build to **test** or **prod**, run the [Promote workflow](../../../actions/workflows/promote.yml) with build ID: \`${{ needs.build.outputs.build_id }}\`
           SUMMARY

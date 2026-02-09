@@ -1,0 +1,65 @@
+# Promote workflow for barcode-data-portal-mwlr
+#
+# Manually trigger to promote a build to test or prod environments.
+# This is separate from CI to avoid blocking dev deployments.
+
+name: Promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: 'Build ID to deploy (e.g., 123-abc1234)'
+        required: true
+        type: string
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - test
+          - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: k8s-${{ inputs.environment }}
+    steps:
+      - name: Checkout for action
+        uses: actions/checkout@v4
+        with:
+          repository: manaakiwhenua/github-workflows
+          sparse-checkout: actions/k8s-deploy
+          path: .github-workflows
+
+      - name: Set cluster
+        id: cluster
+        run: |
+          if [[ "${{ inputs.environment }}" == "prod" ]]; then
+            echo "cluster=tak-k8s-prod" >> $GITHUB_OUTPUT
+          else
+            echo "cluster=tak-k8s-nonprod" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to ${{ inputs.environment }}
+        uses: ./.github-workflows/actions/k8s-deploy
+        with:
+          app_name: barcode-data-portal-mwlr
+          environment: ${{ inputs.environment }}
+          cluster: ${{ steps.cluster.outputs.cluster }}
+          build_key: ${{ inputs.build_id }}
+          bitbucket_token: ${{ secrets.K8S_APPS_CONFIG_TRIGGER_TOKEN }}
+
+      - name: Deployment Summary
+        run: |
+          cat << SUMMARY >> $GITHUB_STEP_SUMMARY
+          ## ✅ ${{ inputs.environment }} Deployment Triggered
+          
+          | Property | Value |
+          |----------|-------|
+          | Build ID | \`${{ inputs.build_id }}\` |
+          | Environment | ${{ inputs.environment }} |
+          | Cluster | ${{ steps.cluster.outputs.cluster }} |
+          
+          The k8s-apps-config pipeline has updated the manifests and ArgoCD will sync shortly.
+          SUMMARY
