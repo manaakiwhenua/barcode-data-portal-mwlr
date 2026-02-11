@@ -23,25 +23,98 @@ Dependencies:
 - Maintenance job to clear File System Cache
   - `find /tmp/bold-public-portal/cache -type f -amin +1440 -delete`
 
-## Local Deployment
+## Local Development
 
-Requirements:
-- [Docker Desktop](https://docs.docker.com/desktop/)
-- [Tilt](https://docs.tilt.dev/install.html)
+### Prerequisites
+
+- [Docker](https://docs.docker.com/engine/install/) (Docker Engine or Docker Desktop)
+- [Tilt](https://docs.tilt.dev/install.html) (provides live-reload dashboard)
+
+> **Note for WSL2 users**: Docker Engine installed directly in WSL2 works fine - Docker Desktop is not required.
+
+### Setup
+
+1. **Configure environment variables**
+
+   Copy the environment template:
+   ```bash
+   cp .env.example .env
+   ```
+
+   The default values work with the local docker-compose Couchbase instance.
+   For external Couchbase servers, update the credentials in `.env`.
+
+2. **Start the development environment**
+
+   ```bash
+   tilt up -f docker/Tiltfile
+   ```
+
+3. **Access the application**
+
+   - Application: http://localhost:8000
+   - Tilt dashboard: http://localhost:10350/overview
+
+4. **Stop the environment**
+
+   ```bash
+   tilt down -f docker/Tiltfile
+   ```
+
+### Alternative: Docker Compose Only
+
+If you prefer not to use Tilt:
 
 ```bash
-REPO_DIR="bold-public-portal"
+# Start
+docker compose up --build
 
-# Spool Up
-cd $REPO_DIR
-tilt up -f docker/Tiltfile
+# Stop
+docker compose down
+```
 
-# Spool Down
-cd $REPO_DIR
-tilt down -f docker/Tiltfile
+### Configuration
 
-# Check Status
-# Go to http://localhost:10350/overview
+Configuration is via environment variables in `.env`. See `.env.example` for all options.
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `COUCHBASE_ENDPOINT` | Yes | `couchbase://couchbase` | Couchbase connection string |
+| `COUCHBASE_USER` | Yes | - | Couchbase username |
+| `COUCHBASE_PASSWORD` | Yes | - | Couchbase password |
+| `COUCHBASE_TIMEOUT` | No | `7200` | Couchbase query timeout (seconds) |
+| `REDIS_HOST` | Yes | `redis` | Redis hostname |
+| `REDIS_PORT` | No | `6379` | Redis port |
+| `APP_URL` | No | `http://fastapi-app:8000` | Application URL |
+| `CAOS_URL` | No | `https://caos.boldsystems.org` | CAOS API URL |
+
+### Troubleshooting
+
+**Docker permission denied (Linux/WSL2)**
+```bash
+sudo usermod -aG docker $USER
+# Then log out and back in (or restart WSL2: wsl --shutdown)
+```
+
+**Port already in use**
+```bash
+# Find what's using the port
+sudo lsof -i :8000
+```
+
+**Tilt not finding .env file**
+
+Ensure `.env` is in the repository root (same directory as `docker-compose.yml`).
+
+**Bind mount errors / init.sh not found**
+
+Check your Docker context. If you have remote Docker contexts configured, bind mounts won't work:
+```bash
+# Check current context
+docker context ls
+
+# Switch to local
+docker context use default
 ```
 
 ## Production Deployment
@@ -127,7 +200,3 @@ This project was made possible through the support of:
 - Genome Canada & Ontario Genomics
 - Ontario Ministry of Colleges and Universities
 - New Frontiers in Research Fund (NFRF)-Transformation
-
-
-
-# trigger CI
