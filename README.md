@@ -36,13 +36,13 @@ Dependencies:
 
 1. **Configure environment variables**
 
-   Copy the environment template and fill in the Couchbase credentials:
+   Copy the environment template:
    ```bash
    cp .env.example .env
-   # Edit .env with your credentials
    ```
 
-   Contact the team if you need access to a development Couchbase instance.
+   The default values work with the local docker-compose Couchbase instance.
+   For external Couchbase servers, update the credentials in `.env`.
 
 2. **Start the development environment**
 
@@ -79,13 +79,14 @@ Configuration is via environment variables in `.env`. See `.env.example` for all
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `COUCHBASE_ENDPOINT` | Yes | - | Couchbase connection string |
+| `COUCHBASE_ENDPOINT` | Yes | `couchbase://couchbase` | Couchbase connection string |
 | `COUCHBASE_USER` | Yes | - | Couchbase username |
 | `COUCHBASE_PASSWORD` | Yes | - | Couchbase password |
-| `REDIS_HOST` | Yes | `localhost` | Redis hostname (`redis` for docker-compose) |
-| `APP_ENVIRONMENT` | No | `production` | Environment name |
-| `NCBI_API_KEY` | No | - | NCBI API key for higher rate limits |
-| `NCBI_API_EMAIL` | No | - | Email for NCBI API requests |
+| `COUCHBASE_TIMEOUT` | No | `7200` | Couchbase query timeout (seconds) |
+| `REDIS_HOST` | Yes | `redis` | Redis hostname |
+| `REDIS_PORT` | No | `6379` | Redis port |
+| `APP_URL` | No | `http://fastapi-app:8000` | Application URL |
+| `CAOS_URL` | No | `https://caos.boldsystems.org` | CAOS API URL |
 
 ### Troubleshooting
 
