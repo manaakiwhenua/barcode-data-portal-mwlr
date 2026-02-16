@@ -29,6 +29,7 @@ Dependencies:
 
 - [Docker](https://docs.docker.com/engine/install/) (Docker Engine or Docker Desktop)
 - [Tilt](https://docs.tilt.dev/install.html) (provides live-reload dashboard)
+  - Using Linux (or WSL), you will need to install kubectl, Kind, ctlptl and Tilt
 
 > **Note for WSL2 users**: Docker Engine installed directly in WSL2 works fine - Docker Desktop is not required.
 

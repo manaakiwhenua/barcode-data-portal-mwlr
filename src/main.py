@@ -44,6 +44,7 @@ from views import (
     sequence,
     templates,
     theme,
+    privacy_policy,
 )
 
 app = FastAPI(docs_url="/api/docs", redoc_url="/api/redoc", title="BOLD Portal")
@@ -90,6 +91,7 @@ app.include_router(api.route)
 app.include_router(about.route)
 app.include_router(sequence.route)
 app.include_router(theme.route)
+app.include_router(privacy_policy.route)
 
 
 # Middleware #
