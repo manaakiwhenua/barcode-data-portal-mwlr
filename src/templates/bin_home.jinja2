@@ -20,6 +20,14 @@
     .navbar-scroll .bsi-logo-slate {
         display: unset;
     }
+    @media (max-width: 768px) {
+        .bsi-logo-slate {
+            display: unset;
+        }
+        .bsi-logo-white {
+            display: none;
+        }
+    }
 </style>
 {% include "includes/bin_searchbar.jinja2" %}
 {% endblock %}
