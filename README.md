@@ -62,18 +62,6 @@ Dependencies:
    tilt down -f docker/Tiltfile
    ```
 
-### Alternative: Docker Compose Only
-
-If you prefer not to use Tilt:
-
-```bash
-# Start
-docker compose up --build
-
-# Stop
-docker compose down
-```
-
 ### Configuration
 
 Configuration is via environment variables in `.env`. See `.env.example` for all options.
