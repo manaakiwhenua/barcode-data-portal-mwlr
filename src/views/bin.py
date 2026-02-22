@@ -114,7 +114,7 @@ async def show_bin(
             "identified_by": summary["identified_by"],
             "title": bin_uri,
             "subtitle": f"Summary and records of {bin_uri}",
-            "banner_bg_class": "coralspiral",
+            "banner_bg_class": "kea",
             "urls": urls,
         },
     )

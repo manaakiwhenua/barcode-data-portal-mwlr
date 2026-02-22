@@ -8110,6 +8110,22 @@ body.landing-page {
   background: url('/static/img/banner_fish.png') 30% 30% no-repeat;
   background-size: cover;
 }
+.landing-page .header-back.frog {
+  background: url('/static/img/banner_frog.png') 30% 30% no-repeat;
+  background-size: cover;
+}
+.landing-page .header-back.gecko {
+  background: url('/static/img/banner_gecko.png') 30% 30% no-repeat;
+  background-size: cover;
+}
+.landing-page .header-back.kea {
+  background: url('/static/img/banner_kea.png') 30% 30% no-repeat;
+  background-size: cover;
+}
+.landing-page .header-back.mountain {
+  background: url('/static/img/banner_mountain.png') 30% 30% no-repeat;
+  background-size: cover;
+}
 .landing-page .header-back.plantbeetle {
   background: url('/static/img/banner_plantbeetle.png') 30% 30% no-repeat;
   background-size: cover;
@@ -8118,8 +8134,12 @@ body.landing-page {
   background: url('/static/img/banner_prayingmantis.png') 30% 30% no-repeat;
   background-size: cover;
 }
+.landing-page .header-back.tuatara {
+  background: url('/static/img/banner_tuatara.png') 30% 30% no-repeat;
+  background-size: cover;
+}
 .landing-page .header-back.inst {
-  background: url('/static/img/Inst.webp') 30% 30% no-repeat;
+  background: url('/static/img/banner_moth.png') 30% 30% no-repeat;
   background-size: cover;
 }
 .landing-page .header-back.primer {
