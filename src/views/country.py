@@ -165,7 +165,7 @@ async def show_country_ocean(
             ),
             "title": name,
             "subtitle": f"Summary and records in {name}",
-            "banner_bg_class": "fish",
+            "banner_bg_class": "mountain",
             "urls": urls,
         },
     )

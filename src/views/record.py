@@ -92,7 +92,7 @@ async def show_record(
             "dataset_data": dataset_data,
             "title": processid,
             "subtitle": f"Details of {processid}",
-            "banner_bg_class": "mantis",
+            "banner_bg_class": "tuatara",
             "urls": urls,
         },
     )
