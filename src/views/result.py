@@ -105,7 +105,7 @@ async def show_search_result(request: Request, query: str):
         "identified_by": summary["identified_by"],
         "title": "Search Results",
         "subtitle": query,
-        "banner_bg_class": "beetle",
+        "banner_bg_class": "frog",
         "urls": urls,
     }
     return templates.TemplateResponse("result.jinja2", response_params)
