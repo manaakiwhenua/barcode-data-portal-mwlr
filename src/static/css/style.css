@@ -9942,3 +9942,7 @@ body.md-skin {
         display: none;
     }
 }
+
+.bullet-pointed-list {
+    color: var(--color-text); 
+}
