@@ -163,6 +163,17 @@ Configuration for BOLD is via environment variables in `.env`. See `.env.example
 | `APP_URL` | No | `http://fastapi-app:8000` | Application URL |
 | `CAOS_URL` | No | `https://caos.boldsystems.org` | CAOS API URL |
 
+### General development tasks
+
+#### Add a new page to BOLD
+1. Add a new HTML file under `src/templates/wp-templates` e.g. `test.html`
+2. Add a new jinja2 file under `src/templates`, e.g. `test.jinja2`. Copy an existing page and modify as required. Include a link to the html file (`{% include "wp-templates/test.html" %}`)
+3. Add a new view file under `src/views`, e.g. `test.py`. Copy and modify an exisiting page as required. Update the `@route/get` and ensure that the return includes a reference to the jinja2 template.
+4. Add new page name to the view routes in `src/main.py`: `app.include_router(test.route)`. Also include the new view file in the `from views import {}` statement.
+5. Include the new page in `navbar.jinja2` and/or in the footer `footer.jinja2`
+
+
+
 ## Production Deployment
 
 Check that `.env` is configured correctly and to production values. The following assumes the ansible playbook is not being used and Couchbase is hosted on a different server.
