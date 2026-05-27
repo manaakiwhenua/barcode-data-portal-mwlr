@@ -10,6 +10,9 @@ This guide explains how to set up and run Cypress tests. If you have already set
 Before proceeding, ensure the following are installed on your machine:
 - **Node.js**: If not installed, download and install it from [Node.js](https://nodejs.org/).
 - **Tilt**: If using Tilt to manage your application, install it from [Tilt Documentation](https://docs.tilt.dev/install.html).
+- **Cypress and Cypress dependencies** 
+[Install Cypress](https://docs.cypress.io/app/get-started/install-cypress#Install--Run), then, if using Linux, [install dependencies](https://docs.cypress.io/app/get-started/install-cypress#Linux-Prerequisites)  
+
 
 ### Steps for Setup
 If you haven’t set up the local environment yet, follow these steps:
