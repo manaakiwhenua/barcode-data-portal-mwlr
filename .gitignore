@@ -1,3 +1,4 @@
 # generic
 .DS_Store
 .env
+src/cypress/node_modules/

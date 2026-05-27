@@ -8,6 +8,7 @@ module.exports = defineConfig({
   e2e: {
     screenshotsFolder: '/tmp/cypress/screenshot/',
     downloadsFolder: '/tmp/cypress/downloads/',
+    supportFile: 'cypress/support/e2e.{js,jsx,ts,tsx}',
     benchmarkFolder: '/tmp/cypress',
     setupNodeEvents(on, config) {
       const resultTsvPath = '/tmp/cypress/results.tsv';
@@ -60,7 +61,7 @@ module.exports = defineConfig({
       });
       return require('./cypress/plugins/index.js')(on, config)
     },
-    baseUrl: 'http://localhost',
+    baseUrl: 'http://localhost:8000',
     // baseUrl: 'https://portal.boldsystems.org',
   },
 });
