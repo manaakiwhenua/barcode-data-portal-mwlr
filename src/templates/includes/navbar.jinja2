@@ -1,6 +1,6 @@
 <div class="navbar-wrapper">
     <nav class="navbar navbar-default navbar-fixed-top navbar-expand-md" role="navigation">
-        <div class="container">
+        <div class="container" style="overflow: visible;">
             <a class="navbar-brand" href="https://www.bioeconomyscience.co.nz/">
                 <img width="220" height="24.5"
                     src="../wp-content/uploads/2026/1/BSI-Logo-White.png"
@@ -22,7 +22,13 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbar">
                 <ul class="nav navbar-nav navbar-right">
                     <li><a class="nav-link page-scroll" href="/">Portal Home</a></li>
-                    <li><a class="nav-link page-scroll" href="/recordset">Datasets</a></li>
+                    <li class="dropdown show">
+                        <a class="nav-link page-scroll dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Datasets </a>
+                        <div class="dropdown-menu bg-warning" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="/recordset">Datasets Home</a>
+                            <a class="dropdown-item" href="/nz-fungi">New Zealand Fungi Dataset</a>
+                        </div>
+                    </li>
                     <li><a class="nav-link page-scroll" href="/geo">Countries</a></li>
                     <li><a class="nav-link page-scroll" href="/institution">Institutions</a></li>
                     <li><a class="nav-link page-scroll" href="/bin">BINs</a></li>
