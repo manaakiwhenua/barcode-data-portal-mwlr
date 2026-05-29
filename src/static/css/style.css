@@ -9991,6 +9991,10 @@ body.md-skin {
     }
 }
 
+#datasets-dropdown-item:hover {
+    color: #1ab394;
+}
+
 .bullet-pointed-list {
     color: var(--color-text); 
 }
