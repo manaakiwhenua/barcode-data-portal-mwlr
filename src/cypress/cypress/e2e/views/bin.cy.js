@@ -1,3 +1,5 @@
+import { expectNoBodyErrors } from '../../support/common_assertions';
+
 const endpoints = [
     {
         url: '/bin',
@@ -9,7 +11,7 @@ const endpoints = [
         failOnStatusCode: true,
     },
     {
-        url: '/bin/BOLD:AAD7527',
+        url: '/bin/BOLD:AAI7397', //use a bin url that has been loaded into our test db where the nearest neighbour is also present
         method: 'GET',
         body: {},
         qs: {},
@@ -17,7 +19,7 @@ const endpoints = [
         expectedStatus: 200,
         failOnStatusCode: true,
         tableID: "resultsTable",
-        tableMinLen: 10,
+        tableMinLen: 1, // this specific example only has 1 associated record
     }
 ]
 
@@ -32,9 +34,17 @@ describe('Test /bin Webpage', () => {
                         expect(res.statusCode, `Request to ${res.url} failed with status ${res.statusCode}`).to.be.lessThan(400);
                         const endTime = Date.now();
                         const timeSpent = endTime - startTime;
-                        expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(1000);
+                        // assert response time is less than 2500ms, somewhat arbitrary as this is dependent on the url we're calling which may not always be in BOLD
+                        expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(2500);
                         startTime = Date.now();
-                        if (req.url.includes('/api/maps/') || req.url.includes('/api/sequence/') || req.url.includes('/api/qr-code/')) {
+
+                        // ignore external image calls to a separate url
+                        const isExternalImage =
+                            res.url.includes('caos.boldsystems.org/api/objects/') ||
+                            req.url.includes('caos.boldsystems.org/api/objects/') ||
+                            /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(res.url) ||
+                            /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(req.url);
+                        if (req.url.includes('/api/maps/') || req.url.includes('/api/sequence/') || req.url.includes('/api/qr-code/') || isExternalImage) {
                             return;
                         }
                         const responseSize = JSON.stringify(res.body).length;
@@ -56,7 +66,17 @@ describe('Test /bin Webpage', () => {
                     }
                 });
             }
-
+            // this endpoint for AAI7397 specifically has only two returned external images to test
+            if (endpoint.url.includes('/bin/BOLD:')) {
+                cy.get('img[src*="caos.boldsystems.org"]', { timeout: 15000 })
+                    .should('have.length.greaterThan', 1)
+                    .should(($imgs) => {
+                    $imgs.each((_, img) => {
+                        expect(img.complete, img.src).to.eq(true);
+                        expect(img.naturalWidth, img.src).to.be.greaterThan(0);
+                    });
+                });
+            }
             cy.request({
                 method: endpoint.method,
                 url: endpoint.url,
@@ -78,12 +98,7 @@ describe('Test /bin Webpage', () => {
                     const scripts = doc.querySelectorAll('script');
                     scripts.forEach(script => script.remove());
 
-                    const bodyText = doc.querySelector('body').textContent.toLowerCase();
-                    const hasError = bodyText.includes("error");
-                    expect(hasError).to.be.false;
-
-                    const notFound = bodyText.includes("not found");
-                    expect(notFound).to.be.false;
+                    expectNoBodyErrors(doc);
 
                     const headExists = doc.querySelector('head') !== null;
                     expect(headExists).to.be.true;
@@ -92,8 +107,8 @@ describe('Test /bin Webpage', () => {
                     expect(titleExists).to.be.true;
                 }
             });
-            if (endpoint.tableID != null){
-                cy.get(`#${endpoint.tableID} tbody tr`).should('have.length.greaterThan', endpoint.tableMinLen);
+            if (endpoint.tableID != null){  
+                cy.get(`#${endpoint.tableID} tbody tr`).should('have.length.at.least', endpoint.tableMinLen);
             }
         });
     });

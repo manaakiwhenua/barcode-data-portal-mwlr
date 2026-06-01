@@ -1,3 +1,5 @@
+import { expectNoBodyErrors } from '../../support/common_assertions';
+
 const endpoints = [
     {
         url: '/recordset',
@@ -69,12 +71,7 @@ describe('Test /recordset Webpage', () => {
                     const scripts = doc.querySelectorAll('script');
                     scripts.forEach(script => script.remove());
 
-                    const bodyText = doc.querySelector('body').textContent.toLowerCase();
-                    const hasError = bodyText.includes("error");
-                    expect(hasError).to.be.false;
-
-                    const notFound = bodyText.includes("not found");
-                    expect(notFound).to.be.false;
+                    expectNoBodyErrors(doc);
                     
                     const headExists = doc.querySelector('head') !== null;
                     expect(headExists).to.be.true;

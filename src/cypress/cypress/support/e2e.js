@@ -19,6 +19,7 @@ import './commands'
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+// This is to handle an error not specific to the tests that is due to an issue with the Wordpress Elementor cached files
 const knownIgnoredErrors = [
   'chunkloaderror: loading chunk 357 failed',
   'text-editor.2c35aafbe5bf0e127950.bundle.min.js',
