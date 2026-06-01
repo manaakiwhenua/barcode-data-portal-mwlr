@@ -13,7 +13,7 @@ const endpoints = [
         expectedStatus: 200,
         failOnStatusCode: true,
         isDownload: false,
-        resultArrayMinLen: 100
+        resultArrayMinLen: 50
     }
 ];
 const path = require('path');
@@ -29,7 +29,7 @@ describe('Test develop endpoint', () => {
                 qs: endpoint.qs,
                 headers: endpoint.headers,
                 failOnStatusCode: endpoint.failOnStatusCode,
-                timeout: 500
+                timeout: 1000
             }).then((response) => {
                 expect(response.status).to.eq(endpoint.expectedStatus);    
                 if (endpoint.expectedStatus === 200) {

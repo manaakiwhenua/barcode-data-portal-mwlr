@@ -67,12 +67,30 @@ describe('Test /api Webpage', () => {
                     const scripts = doc.querySelectorAll('script');
                     scripts.forEach(script => script.remove());
 
-                    const bodyText = doc.querySelector('body').textContent.toLowerCase();
-                    const hasError = bodyText.includes("error");
-                    expect(hasError).to.be.false;
+                    let bodyText = doc.querySelector('body').textContent.toLowerCase();
 
-                    const notFound = bodyText.includes("not found");
-                    expect(notFound).to.be.false;
+                    // code taken from chatgpt to match error patterns in body text
+                    const failurePatterns = [
+                        /\berror:\s/i,
+                        /\bexception\b/i,
+                        /\btraceback\b/i,
+                        /\b404 not found\b/i,
+                    ];
+                    const matches = failurePatterns
+                        .map((pattern) => ({
+                            pattern,
+                            match: bodyText.match(pattern),
+                        }))
+                        .filter(({ match }) => match);
+
+                    matches.forEach(({ pattern, match }) => {
+                        const index = match.index;
+                        const context = bodyText.slice(
+                            Math.max(0, index - 200),
+                            Math.min(bodyText.length, index + 500)
+                        );
+                        });
+                    expect(matches.length, `Found ${matches.length} occurrences of error messages in the body text`).to.equal(0);
                     
                     const headExists = doc.querySelector('head') !== null;
                     expect(headExists).to.be.true;

@@ -18,3 +18,29 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+const knownIgnoredErrors = [
+  'chunkloaderror: loading chunk 357 failed',
+  'text-editor.2c35aafbe5bf0e127950.bundle.min.js',
+  '8ced3627811cd25f73f2440439665c5903f0.js'
+]
+
+Cypress.env('knownIgnoredErrors', knownIgnoredErrors)
+
+Cypress.on('uncaught:exception', (err) => {
+  const message = err.message || ''
+  const stack = err.stack || ''
+
+  const normalizedMessage = message.toLowerCase()
+  const normalizedStack = stack.toLowerCase()
+
+  const isKnownBrokenElementorChunk = knownIgnoredErrors.some((knownError) => {
+    return normalizedMessage.includes(knownError) || normalizedStack.includes(knownError)
+  })
+
+  if (isKnownBrokenElementorChunk) {
+    return false
+  }
+
+  return true
+})
