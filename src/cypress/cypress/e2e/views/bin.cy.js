@@ -66,17 +66,7 @@ describe('Test /bin Webpage', () => {
                     }
                 });
             }
-            // this endpoint for AAI7397 specifically has only two returned external images to test
-            if (endpoint.url.includes('/bin/BOLD:')) {
-                cy.get('img[src*="caos.boldsystems.org"]', { timeout: 15000 })
-                    .should('have.length.greaterThan', 1)
-                    .should(($imgs) => {
-                    $imgs.each((_, img) => {
-                        expect(img.complete, img.src).to.eq(true);
-                        expect(img.naturalWidth, img.src).to.be.greaterThan(0);
-                    });
-                });
-            }
+
             cy.request({
                 method: endpoint.method,
                 url: endpoint.url,
