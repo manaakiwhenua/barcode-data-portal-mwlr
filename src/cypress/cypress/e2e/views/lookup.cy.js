@@ -78,6 +78,7 @@ describe('Test lookup Webpage', () => {
                     // expect(titleExists).to.be.true;
 
                     let expectedString = endpoint.url.replace(new RegExp('^' + '/lookup/'), '');
+                    const bodyText = doc.querySelector('body')?.textContent?.toLowerCase() || '';
                     expect(bodyText).to.equal(expectedString);
                 }
             });

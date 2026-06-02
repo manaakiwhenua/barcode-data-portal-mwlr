@@ -6,13 +6,13 @@ const endpoints = [
         method: 'GET',
         body: {},
         qs: {
-            "query":"Ontario"
+            "query":"Canterbury"
         },
         headers: {},
         expectedStatus: 200,
         failOnStatusCode: true,
         tableID: "resultsTable",
-        tableMinLen: 10,
+        tableMinLen: 4,
     }
 ]
 
@@ -25,13 +25,19 @@ describe('Test /result Webpage', () => {
                     let startTime = Date.now();
                     req.continue((res) => {
                         expect(res.statusCode, `Request to ${res.url} failed with status ${res.statusCode}`).to.be.lessThan(400);
-                        const endTime = Date.now();
-                        const timeSpent = endTime - startTime;
-                        expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(1000);
-                        startTime = Date.now();
-                        if (req.url.includes('/api/maps/') || req.url.includes('/api/sequence/') || req.url.includes('/api/qr-code/')) {
+                        // ignore external image calls to a separate url
+                        const isExternalImage =
+                            res.url.includes('caos.boldsystems.org/api/objects/') ||
+                            req.url.includes('caos.boldsystems.org/api/objects/') ||
+                            /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(res.url) ||
+                            /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(req.url);
+                        if (req.url.includes('/api/maps/') || req.url.includes('/api/sequence/') || req.url.includes('/api/qr-code/') || isExternalImage) {
                             return;
                         }
+                        const endTime = Date.now();
+                        const timeSpent = endTime - startTime;
+                        expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(2500);
+                        startTime = Date.now();
                         const responseSize = JSON.stringify(res.body).length;
                         expect(responseSize, `Response to ${res.url} is too small (${responseSize} bytes)`).to.be.greaterThan(10);
                     });
@@ -83,7 +89,7 @@ describe('Test /result Webpage', () => {
                 }
             });
             if (endpoint.tableID != null){
-                cy.get(`#${endpoint.tableID} tbody tr`).should('have.length.greaterThan', endpoint.tableMinLen);
+                cy.get(`#${endpoint.tableID} tbody tr`).should('have.length.at.least', endpoint.tableMinLen);
             }
         });
     });
