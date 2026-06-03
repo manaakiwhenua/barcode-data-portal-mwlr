@@ -1,12 +1,14 @@
 # BOLD Public Portal
 
 ## Overview
-The Barcode of Life Data (BOLD) Portal is a web application and database designed to support the access, querying, and dissemination of DNA barcode data. DNA barcodes are standardized genetic markers used for species identification, with each record uniquely linking sequence data to specimen information, images, and provenance. Built on open-source technologies—including Couchbase, FastAPI, Redis, and Python—the application provides a scalable and high-performance infrastructure for managing barcode data. Its database follows the Barcode Core Data Model (BCDM - https://github.com/DNAdiversity/BCDM), ensuring structured and interoperable data representation.
+The Barcode of Life Data (BOLD) Portal is a web application and database designed to support the access, querying, and dissemination of DNA barcode data. DNA barcodes are standardized genetic markers used for species identification, with each record uniquely linking sequence data to specimen information, images, and provenance. Built on open-source technologies — including Couchbase, FastAPI, Redis, and Python — the application provides a scalable and high-performance infrastructure for managing barcode data. Its database follows the Barcode Core Data Model (BCDM - https://github.com/DNAdiversity/BCDM), ensuring structured and interoperable data representation.
 
 The BOLD Portal is designed for multi-institutional deployment, enabling data mirroring and supporting data sovereignty requirements. It includes critical functionalities for monitoring and managing DNA reference libraries through National and Institutional Dashboards, facilitating real-time oversight of barcode repositories. Additionally, the system hosts published datasets, allowing users to download and integrate them into local analytical pipelines.
 
 Developed with an API-first architecture, the application provides a robust API that enables seamless extensions without modifications to the core codebase. Released under the AGPL license, the BOLD Portal promotes open access, collaboration, and interoperability within the global biodiversity informatics community.
 
+## New Zealand BOLD (NZBOLD)
+This is the New Zealand instance of [BOLD](https://github.com/DNAdiversity/barcode-data-portal), maintained by the [Bioeconomy Science Institute Maiangi Taiao](https://www.bioeconomyscience.co.nz/).
 
 ## Requirements
 
@@ -29,9 +31,21 @@ Dependencies:
 
 - [Docker](https://docs.docker.com/engine/install/) (Docker Engine or Docker Desktop)
 - [Tilt](https://docs.tilt.dev/install.html) (provides live-reload dashboard)
-  - Using Linux (or WSL), you will need to install kubectl, Kind, ctlptl and Tilt
 
-> **Note for WSL2 users**: Docker Engine installed directly in WSL2 works fine - Docker Desktop is not required.
+> **Note for WSL2 users**: Docker Engine and Tilt installed directly in WSL2 works fine - Docker Desktop is not required.
+
+#### Installing Tilt
+
+Tilt provides a handy dashboard and a service that automatically rebuilds each part of the repo when you change it. You can see the build status and endpoints of each component. 
+
+  ```bash
+  # This command was valid as of Feb 2026, but may have changed.
+  # Please refer to the installation instructions linked under the prerequesites header for current instructions 
+  
+  #Install Tilt
+  curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
+
+  ```
 
 ### Setup
 
@@ -48,7 +62,8 @@ Dependencies:
 2. **Start the development environment**
 
    ```bash
-   tilt up -f docker/Tiltfile
+   tilt up -f docker/Tiltfile 
+   # Give this a moment to start up before accessing the application at http://localhost:8000. You will be able to see the services building on http://localhost:10350/overview
    ```
 
 3. **Access the application**
@@ -62,21 +77,6 @@ Dependencies:
    tilt down -f docker/Tiltfile
    ```
 
-### Configuration
-
-Configuration is via environment variables in `.env`. See `.env.example` for all options.
-
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `COUCHBASE_ENDPOINT` | Yes | `couchbase://couchbase` | Couchbase connection string |
-| `COUCHBASE_USER` | Yes | - | Couchbase username |
-| `COUCHBASE_PASSWORD` | Yes | - | Couchbase password |
-| `COUCHBASE_TIMEOUT` | No | `7200` | Couchbase query timeout (seconds) |
-| `REDIS_HOST` | Yes | `redis` | Redis hostname |
-| `REDIS_PORT` | No | `6379` | Redis port |
-| `APP_URL` | No | `http://fastapi-app:8000` | Application URL |
-| `CAOS_URL` | No | `https://caos.boldsystems.org` | CAOS API URL |
-
 ### Troubleshooting
 
 **Docker permission denied (Linux/WSL2)**
@@ -88,7 +88,23 @@ sudo usermod -aG docker $USER
 **Port already in use**
 ```bash
 # Find what's using the port
-sudo lsof -i :8000
+sudo lsof -i :8000 # or 'sudo lsof -i :10350', if you get errors when trying to access Tilt
+
+# Force shutdown for Tilt if you encounter 'Error: Tilt cannot start because you already have another process on port 10350'
+# General kill command
+kill $(lsof -t -i:10350)
+lsof -i :10350 # this should display nothing if Tilt has been terminated.
+
+# If Tilt is still running, send a gentle shutdown command (SIGTERM) to the exact process (get the PID from the previous output), then check port again
+kill -TERM <PID>
+lsof -i :10350
+
+# If the Tilt process is still running, force shutdown (SIGKILL)
+kill -KILL <PID>
+lsof -i :10350
+
+# You should now be able to re-run Tilt using
+tilt up -f docker/Tiltfile
 ```
 
 **Tilt not finding .env file**
@@ -105,6 +121,32 @@ docker context ls
 # Switch to local
 docker context use default
 ```
+
+### Configuration
+
+Configuration for BOLD is via environment variables in `.env`. See `.env.example` for all options.
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `COUCHBASE_ENDPOINT` | Yes | `couchbase://couchbase` | Couchbase connection string |
+| `COUCHBASE_USER` | Yes | - | Couchbase username |
+| `COUCHBASE_PASSWORD` | Yes | - | Couchbase password |
+| `COUCHBASE_TIMEOUT` | No | `7200` | Couchbase query timeout (seconds) |
+| `REDIS_HOST` | Yes | `redis` | Redis hostname |
+| `REDIS_PORT` | No | `6379` | Redis port |
+| `APP_URL` | No | `http://fastapi-app:8000` | Application URL |
+| `CAOS_URL` | No | `https://caos.boldsystems.org` | CAOS API URL |
+
+### General development tasks
+
+#### Add a new page to BOLD
+1. Add a new HTML file under `src/templates/wp-templates` e.g. `test.html`
+2. Add a new jinja2 file under `src/templates`, e.g. `test.jinja2`. Copy an existing page and modify as required. Include a link to the html file (`{% include "wp-templates/test.html" %}`)
+3. Add a new view file under `src/views`, e.g. `test.py`. Copy and modify an exisiting page as required. Update the `@route/get` and ensure that the return includes a reference to the jinja2 template.
+4. Add new page name to the view routes in `src/main.py`: `app.include_router(test.route)`. Also include the new view file in the `from views import {}` statement.
+5. Include the new page in `navbar.jinja2` and/or in the footer `footer.jinja2`
+
+
 
 ## Production Deployment
 
