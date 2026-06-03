@@ -46,7 +46,7 @@ describe('Test /institution Webpage', () => {
                         expect(res.statusCode, `Request to ${res.url} failed with status ${res.statusCode}`).to.be.lessThan(400);
                         const endTime = Date.now();
                         const timeSpent = endTime - startTime;
-                        expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(6000);
+                        expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(4500);
                         startTime = Date.now();
                         // ignore external image calls to a separate url
                         const isExternalImage =
@@ -66,7 +66,6 @@ describe('Test /institution Webpage', () => {
                     url: endpoint.url,
                     qs: endpoint.qs,
                     headers: endpoint.headers,
-                    encoding: 'binary',
                     failOnStatusCode: endpoint.failOnStatusCode
                 });
                 cy.get('@allRequests.all').then((requests) => {
