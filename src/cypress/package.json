@@ -1,7 +1,12 @@
 {
   "devDependencies": {
-    "cypress": "^13.13.0",
-    "cypress-downloadfile": "^1.2.4",
-    "cypress-benchmark": "^1.0.3"
+    "cypress": "^15.16.0",
+    "cypress-benchmark": "^1.0.3",
+    "cypress-downloadfile": "^1.2.4"
+  },
+  "overrides": {
+    "@cypress/requests": {
+      "qs": "6.15.2"
+    }
   }
 }

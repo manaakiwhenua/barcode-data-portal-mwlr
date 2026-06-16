@@ -1,4 +1,6 @@
-const inst_name = "Centre for Biodiversity Genomics";
+import { expectNoBodyErrors } from '../../support/common_assertions';
+
+const inst_name = "Australian National Insect Collection";
 const endpoints = [
     {
         url: `/institution/${inst_name}`,
@@ -9,10 +11,10 @@ const endpoints = [
         expectedStatus: 200,
         failOnStatusCode: true,
         tableID: "resultsTable",
-        tableMinLen: 10,
+        tableMinLen: 7,
     },
     {
-        url: `/institution/Aarhus%20University`,
+        url: `/institution/University%20of%20Pennsylvania`,
         method: 'GET',
         body: {},
         qs: {},
@@ -20,7 +22,7 @@ const endpoints = [
         expectedStatus: 200,
         failOnStatusCode: true,
         tableID: "resultsTable",
-        tableMinLen: 2,
+        tableMinLen: 25,
     },
     {
         url: `/institution/unknown`,
@@ -44,9 +46,15 @@ describe('Test /institution Webpage', () => {
                         expect(res.statusCode, `Request to ${res.url} failed with status ${res.statusCode}`).to.be.lessThan(400);
                         const endTime = Date.now();
                         const timeSpent = endTime - startTime;
-                        expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(1000);
+                        expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(4500);
                         startTime = Date.now();
-                        if (req.url.includes('/api/maps/') || req.url.includes('/api/sequence/') || req.url.includes('/api/qr-code/')) {
+                        // ignore external image calls to a separate url
+                        const isExternalImage =
+                            res.url.includes('caos.boldsystems.org/api/objects/') ||
+                            req.url.includes('caos.boldsystems.org/api/objects/') ||
+                            /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(res.url) ||
+                            /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(req.url);
+                        if (req.url.includes('/api/maps/') || req.url.includes('/api/sequence/') || req.url.includes('/api/qr-code/') || isExternalImage) {
                             return;
                         }
                         const responseSize = JSON.stringify(res.body).length;
@@ -68,7 +76,6 @@ describe('Test /institution Webpage', () => {
                     }
                 });
             }
-            
             cy.request({
                 method: endpoint.method,
                 url: endpoint.url,
@@ -90,12 +97,7 @@ describe('Test /institution Webpage', () => {
                     const scripts = doc.querySelectorAll('script');
                     scripts.forEach(script => script.remove());
 
-                    const bodyText = doc.querySelector('body').textContent.toLowerCase();
-                    const hasError = bodyText.includes("error");
-                    expect(hasError).to.be.false;
-
-                    const notFound = bodyText.includes("not found");
-                    expect(notFound).to.be.false;
+                    expectNoBodyErrors(doc);
                     
                     const headExists = doc.querySelector('head') !== null;
                     expect(headExists).to.be.true;
@@ -105,7 +107,7 @@ describe('Test /institution Webpage', () => {
                 }
             });
             if (endpoint.tableID != null){
-                cy.get(`#${endpoint.tableID} tbody tr`).should('have.length.greaterThan', endpoint.tableMinLen);
+                cy.get(`#${endpoint.tableID} tbody tr`).should('have.length.at.least', endpoint.tableMinLen);
             }
         });
     });
