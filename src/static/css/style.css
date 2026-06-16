@@ -9976,7 +9976,6 @@ body.md-skin {
     flex-wrap: wrap;
 }
 
-/* Have to set both max-height and min-height to ensure consistent image sizing - .elementor img otherwise sets height to auto */
 #spotlight-card-image {
   border-radius: var(--global-border-radius);
   height: 60%;
