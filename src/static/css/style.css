@@ -9945,6 +9945,9 @@ body.md-skin {
 
 .spotlight-section {
     padding: 40px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
 }
 
 #spotlight-btn {
@@ -9967,9 +9970,16 @@ body.md-skin {
     margin-bottom: 20px;
 }
 
-.spotlight-card img {
+.spotlight-cards-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Have to set both max-height and min-height to ensure consistent image sizing - .elementor img otherwise sets height to auto */
+#spotlight-card-image {
   border-radius: var(--global-border-radius);
-  max-height: 50%;
+  height: 60%;
   object-fit: cover;
 }
 
@@ -9977,13 +9987,6 @@ body.md-skin {
     .spotlight-section {
         margin-top: 40px;
         background-color: white;
-    }
-    .spotlight-section h1 {
-        text-align: center;
-    }
-    .spotlight-cards-container {
-        display: flex;
-        flex-direction: column;
     }
     .spotlight-cards-container .spotlight-card {
         margin-bottom: 15px;
