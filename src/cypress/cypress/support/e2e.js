@@ -26,7 +26,7 @@ const knownIgnoredErrors = [
   '8ced3627811cd25f73f2440439665c5903f0.js'
 ]
 
-Cypress.env('knownIgnoredErrors', knownIgnoredErrors)
+Cypress.expose('knownIgnoredErrors', knownIgnoredErrors)
 
 Cypress.on('uncaught:exception', (err) => {
   const message = err.message || ''
