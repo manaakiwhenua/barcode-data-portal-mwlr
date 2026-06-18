@@ -14,11 +14,11 @@
     }
 
     async function showDropdownMenu() {
-        $(".dropdown-menu").show();
+        $("#bin-search-dropdown").show();
     }
 
     async function hideDropdownMenu() {
-        $(".dropdown-menu").hide();
+        $("#bin-search-dropdown").hide();
     }
 
     async function showDropdownSpinner() {
@@ -76,7 +76,7 @@
             } else {
                 searchTerm = `${item.original_term}`
             }
-            $(".dropdown-menu").append($("<a>", {
+            $("#bin-search-dropdown").append($("<a>", {
                 "class": "dropdown-item",
                 "onclick": "addConfirmedSearchTerm(this);",
                 //"onclick": item.scope == "ids" ? "enterDirectSearchTerm(this);" : "addConfirmedSearchTerm(this);",
@@ -86,7 +86,7 @@
     }
 
     async function clearDropdownItems() {
-        $(".dropdown-item").not(".dropdown-special").remove();
+        $("#bin-search-dropdown .dropdown-item").not(".dropdown-special").remove();
     }
 
     async function removeConfirmedSearchTerm(element) {
@@ -285,7 +285,7 @@
                         <span class="input-group-addon"><i class="fa fa-search"></i><span>
                     </div>
                     <div class="dropdown">
-                        <div class="dropdown-menu" aria-labelledby="query">
+                        <div class="dropdown-menu" id="bin-search-dropdown" aria-labelledby="query">
                             <a id="dropdown-spinner" class="dropdown-item dropdown-special">
                                 <span class="loading dots"></span>
                                 Loading...
