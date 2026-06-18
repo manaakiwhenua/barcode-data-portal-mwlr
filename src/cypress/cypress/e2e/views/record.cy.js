@@ -1,3 +1,5 @@
+import { expectNoBodyErrors } from '../../support/common_assertions';
+
 const processid = "ABMCH001-07";
 const endpoints = [
     {
@@ -33,7 +35,12 @@ describe('Test /record Webpage', () => {
                         const timeSpent = endTime - startTime;
                         expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(1000);
                         startTime = Date.now();
-                        if (req.url.includes('/api/maps/') || req.url.includes('/api/sequence/') || req.url.includes('/api/qr-code/')) {
+                        const isExternalImage =
+                            res.url.includes('caos.boldsystems.org/api/objects/') ||
+                            req.url.includes('caos.boldsystems.org/api/objects/') ||
+                            /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(res.url) ||
+                            /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(req.url);
+                        if (req.url.includes('/api/maps/') || req.url.includes('/api/sequence/') || req.url.includes('/api/qr-code/') || isExternalImage) {
                             return;
                         }
                         const responseSize = JSON.stringify(res.body).length;
@@ -77,12 +84,7 @@ describe('Test /record Webpage', () => {
                     const scripts = doc.querySelectorAll('script');
                     scripts.forEach(script => script.remove());
 
-                    const bodyText = doc.querySelector('body').textContent.toLowerCase();
-                    const hasError = bodyText.includes("error");
-                    expect(hasError).to.be.false;
-
-                    const notFound = bodyText.includes("not found");
-                    expect(notFound).to.be.false;
+                    expectNoBodyErrors(doc);
                     
                     const headExists = doc.querySelector('head') !== null;
                     expect(headExists).to.be.true;

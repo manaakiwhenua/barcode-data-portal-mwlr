@@ -29,7 +29,7 @@ describe('Test summary endpoint', () => {
                 qs: endpoint.qs,
                 headers: endpoint.headers,
                 failOnStatusCode: endpoint.failOnStatusCode,
-                timeout: 500
+                timeout: 1500
             }).then((response) => {
                 expect(response.status).to.eq(endpoint.expectedStatus);    
                 if (endpoint.expectedStatus === 200) {

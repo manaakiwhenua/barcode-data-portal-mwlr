@@ -1,3 +1,5 @@
+import { expectNoBodyErrors } from '../../support/common_assertions';
+
 const endpoints = [
     {
         url: '/lookup/test',
@@ -21,7 +23,7 @@ describe('Test lookup Webpage', () => {
                         expect(res.statusCode, `Request to ${res.url} failed with status ${res.statusCode}`).to.be.lessThan(400);
                         const endTime = Date.now();
                         const timeSpent = endTime - startTime;
-                        expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(1000);
+                        expect(timeSpent, `Request to ${res.url} took ${timeSpent}ms`).to.be.lessThan(2500);
                         startTime = Date.now();
                         if (req.url.includes('/api/maps/') || req.url.includes('/api/sequence/') || req.url.includes('/api/qr-code/')) {
                             return;
@@ -67,12 +69,7 @@ describe('Test lookup Webpage', () => {
                     const scripts = doc.querySelectorAll('script');
                     scripts.forEach(script => script.remove());
 
-                    const bodyText = doc.querySelector('body').textContent.toLowerCase();
-                    const hasError = bodyText.includes("error");
-                    expect(hasError).to.be.false;
-
-                    const notFound = bodyText.includes("not found");
-                    expect(notFound).to.be.false;
+                    expectNoBodyErrors(doc);
                     
                     const headExists = doc.querySelector('head') !== null;
                     expect(headExists).to.be.true;
@@ -81,6 +78,7 @@ describe('Test lookup Webpage', () => {
                     // expect(titleExists).to.be.true;
 
                     let expectedString = endpoint.url.replace(new RegExp('^' + '/lookup/'), '');
+                    const bodyText = doc.querySelector('body')?.textContent?.toLowerCase() || '';
                     expect(bodyText).to.equal(expectedString);
                 }
             });

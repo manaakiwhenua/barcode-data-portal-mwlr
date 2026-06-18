@@ -11,7 +11,7 @@ const endpoints = [
         tableMinLen: 10
     },
     {
-        // url: '/bin/BOLD:AAD7527',
+        // url: '/bin/BOLD:AAC3088',
         url: '/bin/BOLD:AAA2953',
         method: 'GET',
         body: {},
