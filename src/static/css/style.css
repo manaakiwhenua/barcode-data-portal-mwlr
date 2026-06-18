@@ -9943,6 +9943,60 @@ body.md-skin {
     }
 }
 
+.spotlight-section {
+    padding: 40px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+#spotlight-btn {
+    padding: 18px 25px;
+    cursor: pointer;
+    border-radius: var(--button-border-radius);
+    transition: var(--global-transition);
+    font-size: var(--font-size-default);
+    font-family: var(--e-global-typography-accent-font-family);
+    font-weight: var(--e-global-typography-accent-font-weight);
+    transition-property: transform;
+}
+
+#spotlight-btn:hover {
+    transform: scale(1.1);
+}
+
+.spotlight-card {
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.spotlight-cards-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+#spotlight-card-image {
+  border-radius: var(--global-border-radius);
+  height: 60%;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .spotlight-section {
+        margin-top: 40px;
+        background-color: white;
+    }
+    .spotlight-cards-container .spotlight-card {
+        margin-bottom: 15px;
+        max-width: 100%;
+    }
+}
+
+#datasets-dropdown-item:hover {
+    color: #1ab394;
+}
+
 .bullet-pointed-list {
     color: var(--color-text); 
 }
