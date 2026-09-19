@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   build:
-    uses: manaakiwhenua/github-workflows/.github/workflows/docker-build.yml@main
+    uses: manaakiwhenua/github-workflows/.github/workflows/docker-build.yml@8c2d28882e634fdcee7cbf0f4ceeddfae75a06f5 # v1.0.0
     with:
       bake_file: docker-bake.hcl
       bake_target: default
@@ -47,6 +47,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: manaakiwhenua/github-workflows
+          ref: 8c2d28882e634fdcee7cbf0f4ceeddfae75a06f5 # v1.0.0
           sparse-checkout: actions/k8s-deploy
           path: .github-workflows
 
