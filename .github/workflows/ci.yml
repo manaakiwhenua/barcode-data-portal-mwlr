@@ -25,7 +25,11 @@ jobs:
     with:
       bake_file: docker-bake.hcl
       bake_target: default
-      runs_on: tak-k8s-ci
+      # Pull requests build on a GitHub-hosted runner: they do not push, so they
+      # need nothing from the internal network, and code from a fork never runs
+      # inside the CI cluster (PE-663). Pushes keep the self-hosted runner, which
+      # is what can reach the registry.
+      runs_on: ${{ github.event_name == 'pull_request' && 'ubuntu-latest' || 'tak-k8s-ci' }}
       push: ${{ github.event_name != 'pull_request' }}
       registry_host: ${{ vars.ARTIFACTORY_HOST }}
       registry_username: ${{ vars.ARTIFACTORY_USERNAME }}
